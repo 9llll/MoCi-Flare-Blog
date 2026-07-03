@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title id="pageTitle">莫辞の资源库</title>
+    <title id="pageTitle">你的站点名称</title>
     <meta name="description" id="metaDesc" content="">
     <meta name="keywords" id="metaKeywords" content="">
     <link rel="icon" id="faviconLink" href="">
@@ -119,7 +119,7 @@
 <body>
 
 <header class="top-header"><div class="top-inner">
-    <a class="site-logo-link" onclick="navigate('home')"><div class="site-logo-img" id="logoImg">🌿</div><span id="siteName">莫辞の资源库</span></a>
+    <a class="site-logo-link" onclick="navigate('home')"><div class="site-logo-img" id="logoImg">🌿</div><span id="siteName">你的站点名称</span></a>
     <nav class="top-nav" id="topNav"><a data-page="home" class="active">首页</a><a data-page="friends">友链</a><a data-page="about">关于</a><a data-page="archive">归档</a></nav>
     <div class="header-actions">
         <div class="search-box"><input type="text" id="searchInput" placeholder="搜索..." onkeydown="if(event.key==='Enter')openSearch()"><button onclick="openSearch()"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg></button></div>
@@ -154,7 +154,7 @@
 <div class="toast" id="toast"></div>
 
 <script>
-const API='https://site-api.moci.cc';
+const API='https://YOUR_WORKER_DOMAIN';
 let data={articles:[],categories:[],friends:[],pages:[],about:'',site:{},seo:{},footer:{},ads:{}};
 let currentPage='home',currentCat='全部',currentSubcat='全部';
 let pendingArticleId=null,pendingResIndex=0,currentPayOrderId=null;
@@ -167,7 +167,7 @@ function syncMobileNav(){const active=$(`#topNav a.active`);const page=active?ac
 async function redirectViaGo(u){try{const r=await fetch(`${API}/go`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({url:u})});const d=await r.json();if(d.success&&d.goUrl)window.open(d.goUrl,'_blank');else window.open(u,'_blank')}catch(e){window.open(u,'_blank')}}
 async function getResourceUrl(aid,ri){try{const r=await fetch(`${API}/verify`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({articleId:aid,resourceIndex:ri,password:''})});const d=await r.json();if(d.valid&&d.url)redirectViaGo(d.url);else toast('❌ 获取失败')}catch(e){toast('❌ 网络错误')}}
 
-function applySiteConfig(){const s=data.site||{},seo=data.seo||{};$('pageTitle').textContent=s.title||'莫辞の资源库';$('metaDesc').setAttribute('content',seo.desc||s.desc||'');$('metaKeywords').setAttribute('content',seo.keywords||s.keywords||'');$('faviconLink').setAttribute('href',s.favicon||'');$('siteName').textContent=s.title||'莫辞の资源库';if(s.logo)$('logoImg').innerHTML=`<img src="${s.logo}" style="width:100%;height:100%;object-fit:cover">`}
+function applySiteConfig(){const s=data.site||{},seo=data.seo||{};$('pageTitle').textContent=s.title||'你的站点名称';$('metaDesc').setAttribute('content',seo.desc||s.desc||'');$('metaKeywords').setAttribute('content',seo.keywords||s.keywords||'');$('faviconLink').setAttribute('href',s.favicon||'');$('siteName').textContent=s.title||'你的站点名称';if(s.logo)$('logoImg').innerHTML=`<img src="${s.logo}" style="width:100%;height:100%;object-fit:cover">`}
 
 function renderNav(){
     const pages=(data.pages||[]).filter(p=>p.showInNav).sort((a,b)=>(a.sortOrder||0)-(b.sortOrder||0));
@@ -177,7 +177,7 @@ function renderNav(){
     $('mobileNavOverlay').innerHTML=m;
 }
 
-function renderFooter(){const f=data.footer||{},s=data.site||{};$('footerAboutText').textContent=f.about||s.desc||'分享优质资源。';const ct=f.contactTitle||'联系方式';$('footerContactTitle').textContent='📬 '+ct;let c='';for(let i=1;i<=4;i++){const l=f['contact'+i+'Label']||'',v=f['contact'+i+'Value']||'',u=f['contact'+i+'Url']||'';if(l&&v){if(u)c+=`<div>${l} <a href="${u}" target="_blank">${v}</a></div>`;else c+=`<div>${l} ${v}</div>`}}if(!c)c='<div>暂无联系方式</div>';$('footerContact').innerHTML=c;let l='';(f.links||[]).forEach(x=>{l+=`<div><a href="${x.url}">${x.name}</a></div>`});(data.pages||[]).filter(p=>p.showInNav).forEach(p=>{l+=`<div><a href="/page/${p.slug}.html">${p.navLabel||p.title}</a></div>`});if(!l)l='<div>暂无链接</div>';$('footerLinksList').innerHTML=l;$('footerCopyright').textContent=s.copyright||`© ${new Date().getFullYear()} ${s.title||'莫辞の资源库'}`;$('footerICP').textContent=s.icp||'';$('footerICP').style.display=s.icp?'':'none';if(f.script)$('footerScript').innerHTML=f.script}
+function renderFooter(){const f=data.footer||{},s=data.site||{};$('footerAboutText').textContent=f.about||s.desc||'分享优质资源。';const ct=f.contactTitle||'联系方式';$('footerContactTitle').textContent='📬 '+ct;let c='';for(let i=1;i<=4;i++){const l=f['contact'+i+'Label']||'',v=f['contact'+i+'Value']||'',u=f['contact'+i+'Url']||'';if(l&&v){if(u)c+=`<div>${l} <a href="${u}" target="_blank">${v}</a></div>`;else c+=`<div>${l} ${v}</div>`}}if(!c)c='<div>暂无联系方式</div>';$('footerContact').innerHTML=c;let l='';(f.links||[]).forEach(x=>{l+=`<div><a href="${x.url}">${x.name}</a></div>`});(data.pages||[]).filter(p=>p.showInNav).forEach(p=>{l+=`<div><a href="/page/${p.slug}.html">${p.navLabel||p.title}</a></div>`});if(!l)l='<div>暂无链接</div>';$('footerLinksList').innerHTML=l;$('footerCopyright').textContent=s.copyright||`© ${new Date().getFullYear()} ${s.title||'你的站点名称'}`;$('footerICP').textContent=s.icp||'';$('footerICP').style.display=s.icp?'':'none';if(f.script)$('footerScript').innerHTML=f.script}
 function renderAds(){const a=data.ads||{};const m={adTopBanner:'topBanner',adMobile:'mobile',adBottomBanner:'bottomBanner'};Object.entries(m).forEach(([id,k])=>{const el=$(id);if(el){el.innerHTML=a[k]||'';el.style.display=a[k]?'':'none'}})}
 function handleRoute(){const p=location.pathname;const pm=p.match(/^\/page\/(.+)\.html$/);if(pm){loadPage(pm[1]);return true}const am=p.match(/^\/article\/(.+)\/(.+)\.html$/);if(am){loadArticle(am[1],am[2]);return true}return false}
 async function loadPage(s){try{const r=await fetch(`${API}/page/${s}.html`);const d=await r.json();if(d&&!d.error)navigate('page-'+s)}catch(e){}}
