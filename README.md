@@ -23,7 +23,7 @@ README.txt      本文件
 
 功能特性
 --------
-[博客功能]
+### [博客功能]
   - Quill 富文本编辑器
   - 文章封面自动提取
   - 二级分类筛选（支持自定义英文slug）
@@ -34,26 +34,26 @@ README.txt      本文件
   - 文章目录自动生成
   - 全文搜索
 
-[资源下载]
+### [资源下载]
   - 公开访问
   - 密码保护
   - 付费下载
   - 密码+付费
   - AES-256-GCM 加密安全跳转
 
-[付费系统]
+### [付费系统]（需优化、懒得改了）
   - 扫码支付
   - 订单管理
   - 邮件自动发送下载链接
 
-[设计]
+### [设计]
   - 微软雅黑字体，靛蓝商务配色
   - 深色/浅色主题一键切换
   - PC 4列 / 平板 3列 / 手机 2列 自适应
   - 移动端汉堡菜单
   - 后台移动端自适应
 
-[其他]
+### [其他]
   - 自定义单页（支持导航栏显示/隐藏）
   - 友链管理
   - 广告位管理（6个位置）
@@ -65,19 +65,19 @@ README.txt      本文件
   - 文章底部免责声明
 
 
-部署步骤
+## 部署步骤
 --------
 
-第一步：创建 Cloudflare 资源
+### 第一步：创建 Cloudflare 资源
   1. 创建 D1 数据库
   2. 创建 R2 存储桶
   3. 创建 KV 命名空间
   4. 配置 R2 自定义域名
 
-第二步：初始化 D1 数据库
-  进入 D1 控制台，逐条执行以下 SQL（每次一条）：
+### 第二步：初始化 D1 数据库
+  #### 进入 D1 控制台，逐条执行以下 SQL（每次一条）：
 
-  -- 第1条：创建文章表
+ ####  -- 第1条：创建文章表
   CREATE TABLE articles (
     id TEXT PRIMARY KEY,
     title TEXT NOT NULL,
@@ -96,19 +96,19 @@ README.txt      本文件
   );
 
   
-  -- 第2条
+ ####  -- 第2条
   CREATE INDEX idx_articles_created ON articles(created_at DESC);
 
   
-  -- 第3条
+ ####  -- 第3条
   CREATE INDEX idx_articles_category ON articles(category_slug);
 
   
-  -- 第4条
+####   -- 第4条
   CREATE INDEX idx_articles_slug ON articles(slug);
 
   
-  -- 第5条：创建订单表
+####   -- 第5条：创建订单表
   CREATE TABLE orders (
     id TEXT PRIMARY KEY,
     article_id TEXT NOT NULL,
@@ -121,25 +121,25 @@ README.txt      本文件
   );
 
  
-  -- 第6条
+####   -- 第6条
   CREATE INDEX idx_orders_status ON orders(status);
 
-第三步：部署 Worker
-  1. 创建 Cloudflare Worker
-  2. 粘贴 worker.js 代码
-  3. 绑定 KV（变量名: SITE_DATA）
-  4. 绑定 D1（变量名: DB）
-  5. 绑定 R2（变量名: BUCKET）
-  6. 修改配置项（见下方）
-  7. 部署
+### 第三步：部署 Worker
+  #### 1. 创建 Cloudflare Worker
+  #### 2. 粘贴 worker.js 代码
+   #### 3. 绑定 KV（变量名: SITE_DATA）
+    ####4. 绑定 D1（变量名: DB）
+   #### 5. 绑定 R2（变量名: BUCKET）
+   #### 6. 修改配置项（见下方）
+   #### 7. 部署
 
-第四步：上传前端文件
-  将 index.html、admin.html、go.html 上传到站点根目录
+### 第四步：上传前端文件
+  #### 将 index.html、admin.html、go.html 上传到站点根目录
 
 
-配置说明
+### 配置说明
 --------
-部署前需修改以下占位符：
+#### 部署前需修改以下占位符：
 
   worker.js 中：
     AES_KEY                  - 加密密钥（自定义字符串）
@@ -158,9 +158,9 @@ README.txt      本文件
     AES_KEY                  - 与 worker.js 保持一致
 
 
-修改管理密码
+### 修改管理密码
 -----------
-在浏览器控制台运行以下代码，获取新密码的哈希值：
+#### 在浏览器控制台运行以下代码，获取新密码的哈希值：
 
   async function hash(p) {
     const e = new TextEncoder();
@@ -195,14 +195,7 @@ API 接口
   GET    /debug                   检查绑定状态
 
 
-数据存储
---------
-  KV (SITE_DATA)    - 站点配置、分类、友链、单页、广告、SEO、SMTP
-  D1                - 文章内容、订单记录
-  R2                - 上传的图片文件
-
-
-安全特性
+### 安全特性
 --------
   - 管理密码 SHA-256 验证
   - 资源密码服务端验证
@@ -212,7 +205,7 @@ API 接口
   - MailChannels 邮件服务（免费）
 
 
-技术栈
+### 技术栈
 --------
   前端：原生 HTML/CSS/JS、Quill 编辑器、Highlight.js
   后端：Cloudflare Workers
@@ -222,7 +215,7 @@ API 接口
   加密：AES-256-GCM
 
 
-注意事项
+### 注意事项
 --------
   1. 部署前请确保 D1 表已创建
   2. Worker 需绑定 KV、D1、R2 三个资源
@@ -232,7 +225,7 @@ API 接口
   6. 图片粘贴会自动上传R2，请勿直接粘贴 base64 图片
 
 
-更新日志
+### 更新日志
 --------
   v1.0  首次发布
         - 完整博客与资源管理功能
