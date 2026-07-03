@@ -75,8 +75,9 @@ README.txt      本文件
   4. 配置 R2 自定义域名
 
 第二步：初始化 D1 数据库
-  进入 D1 控制台，逐条执行：
+  进入 D1 控制台，逐条执行以下 SQL（每次一条）：
 
+  -- 第1条：创建文章表
   CREATE TABLE articles (
     id TEXT PRIMARY KEY,
     title TEXT NOT NULL,
@@ -94,10 +95,16 @@ README.txt      本文件
     updated_at INTEGER NOT NULL
   );
 
+  -- 第2条
   CREATE INDEX idx_articles_created ON articles(created_at DESC);
+
+  -- 第3条
   CREATE INDEX idx_articles_category ON articles(category_slug);
+
+  -- 第4条
   CREATE INDEX idx_articles_slug ON articles(slug);
 
+  -- 第5条：创建订单表
   CREATE TABLE orders (
     id TEXT PRIMARY KEY,
     article_id TEXT NOT NULL,
@@ -109,8 +116,8 @@ README.txt      本文件
     updated_at INTEGER NOT NULL
   );
 
+  -- 第6条
   CREATE INDEX idx_orders_status ON orders(status);
-
 第三步：部署 Worker
   1. 创建 Cloudflare Worker
   2. 粘贴 worker.js 代码
