@@ -3,6 +3,8 @@
 
 一个基于 Cloudflare Workers + D1 + R2 + KV 的轻量级博客与资源管理系统。
 
+#### 在线预览：[莫辞](https://s.moci.cc/)
+
 
 ##  ✨ 功能特性   -详细查看：[功能介绍](https://github.com/9llll/MoCi-Flare-Blog/edit/main/Readme1.md)
 
