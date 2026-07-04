@@ -17,7 +17,19 @@ const API = 'https://[你的Worker域名].workers.dev';
 let data = { articles: [], categories: [], friends: [], pages: [], about: '', site: {}, seo: {}, footer: {}, ads: {} };
 let currentPage = 'home', currentCat = '全部', currentSubcat = '全部';
 let pendingArticleId = null, pendingResIndex = 0, currentPayOrderId = null;
+// ============================================================
+// 全局状态（在文件顶部添加）
+// ============================================================
 
+let data = { articles: [], categories: [], friends: [], pages: [], about: '', site: {}, seo: {}, footer: {}, ads: {} };
+let currentPage = 'home', currentCat = '全部', currentSubcat = '全部';
+let pendingArticleId = null, pendingResIndex = 0, currentPayOrderId = null;
+
+// ⭐ 新增：视图和分页状态
+let currentView = 'card'; // 'card' | 'list'
+let currentPageNum = 1;
+const PAGE_SIZE_CARD = 12; // 3行 × 4列
+const PAGE_SIZE_LIST = 20;
 // ============================================================
 // 工具函数
 // ============================================================
