@@ -48,10 +48,6 @@
     --shadow-md: 0 8px 24px rgba(0,0,0,0.4);
 }
 
-/* ============================================================
-   基础重置
-   ============================================================ */
-
 * {
     margin: 0;
     padding: 0;
@@ -1174,7 +1170,6 @@ body {
         font-size: 15px;
     }
 
-    /* ========== 顶部导航调整 ========== */
     .top-inner {
         flex-wrap: nowrap;
         height: 56px;
@@ -1185,7 +1180,6 @@ body {
         position: relative;
     }
 
-    /* ⭐ Logo 左对齐 */
     .site-logo-link {
         width: auto;
         justify-content: flex-start;
@@ -1203,7 +1197,6 @@ body {
         display: inline-block;
     }
 
-    /* ⭐ 汉堡按钮 - 左对齐 */
     .hamburger-btn {
         display: flex;
         width: 36px;
@@ -1211,26 +1204,21 @@ body {
         flex-shrink: 0;
         margin-right: 2px;
         order: 0;
-        /* 最左边 */
     }
 
-    /* ⭐ 导航隐藏 */
     .top-nav {
         display: none;
     }
 
-    /* ⭐ 右侧操作区 - 右对齐 */
     .header-actions {
         width: auto;
         justify-content: flex-end;
         gap: 4px;
         flex-shrink: 0;
         margin-left: auto;
-        /* 推到右边 */
         order: 2;
     }
 
-    /* ⭐ 搜索框 - 只显示图标 */
     .search-box {
         width: 36px;
         height: 36px;
@@ -1289,7 +1277,6 @@ body {
         background: var(--bg);
     }
 
-    /* ⭐ 日夜切换按钮 */
     .icon-btn {
         width: 36px;
         height: 36px;
@@ -1304,12 +1291,10 @@ body {
         height: 18px;
     }
 
-    /* ========== 移动端导航遮罩位置 ========== */
     .mobile-nav-overlay {
         top: 56px;
     }
 
-    /* ========== 分类标签缩小 ========== */
     .cat-bar {
         gap: 6px;
         justify-content: center;
@@ -1338,7 +1323,6 @@ body {
         white-space: nowrap;
     }
 
-    /* ========== 卡片网格 ========== */
     .card-grid {
         grid-template-columns: repeat(2, 1fr);
         gap: 8px;
@@ -1371,7 +1355,6 @@ body {
         font-size: 0.62rem;
     }
 
-    /* ========== 文章详情 ========== */
     .article-layout {
         flex-direction: column;
     }
@@ -1386,7 +1369,6 @@ body {
         gap: 8px;
     }
 
-    /* ========== 页脚 ========== */
     .footer-grid {
         grid-template-columns: 1fr;
         gap: 16px;
@@ -1395,7 +1377,6 @@ body {
         grid-template-columns: repeat(2, 1fr);
     }
 
-    /* ========== 返回顶部 ========== */
     .back-to-top {
         bottom: 20px;
         right: 20px;
@@ -1403,7 +1384,6 @@ body {
         height: 38px;
     }
 
-    /* ========== 容器 ========== */
     .container {
         padding: 12px 12px;
     }
@@ -1411,7 +1391,6 @@ body {
         padding: 10px 12px 0;
     }
 
-    /* ========== 弹窗 ========== */
     .modal-box {
         padding: 20px 16px;
         width: 95vw;
@@ -1420,7 +1399,6 @@ body {
         max-height: 70vh;
     }
 
-    /* ========== 媒体内容自适应 ========== */
     img,
     video,
     iframe,
@@ -1445,7 +1423,6 @@ body {
         max-height: 100px;
     }
 
-    /* ========== 资源按钮 ========== */
     .res-btn {
         padding: 10px 8px;
         font-size: 0.8rem;
