@@ -153,22 +153,57 @@ function goToPage(page) {
 }
 
 // ============================================================
-// 视图切换
+// 视图切换（单个按钮循环切换）
 // ============================================================
 
-function switchView(view) {
-    currentView = view;
+function toggleView() {
+    // 切换视图
+    const newView = currentView === 'card' ? 'list' : 'card';
+    currentView = newView;
     currentPageNum = 1;
 
-    document.querySelectorAll('.view-btn').forEach(btn => {
-        btn.classList.toggle('active', btn.dataset.view === view);
-    });
+    // ⭐ 更新图标
+    updateViewIcon(currentView);
+
+    // 更新视图信息显示
+    updateViewInfo(getFilteredArticles().length);
 
     try {
-        localStorage.setItem('moci_view_preference', view);
+        localStorage.setItem('moci_view_preference', currentView);
     } catch (e) {}
 
     renderCards();
+}
+
+// ============================================================
+// 更新视图按钮图标
+// ============================================================
+
+function updateViewIcon(view) {
+    const icon = document.getElementById('viewToggleIcon');
+    if (!icon) return;
+
+    if (view === 'card') {
+        // 卡片图标（4个方块）
+        icon.innerHTML = `
+            <rect x="3" y="3" width="7" height="7"/>
+            <rect x="14" y="3" width="7" height="7"/>
+            <rect x="3" y="14" width="7" height="7"/>
+            <rect x="14" y="14" width="7" height="7"/>
+        `;
+        document.getElementById('viewToggleBtn').title = '切换到列表视图';
+    } else {
+        // 列表图标（3条横线）
+        icon.innerHTML = `
+            <line x1="8" y1="6" x2="21" y2="6"/>
+            <line x1="8" y1="12" x2="21" y2="12"/>
+            <line x1="8" y1="18" x2="21" y2="18"/>
+            <line x1="3" y1="6" x2="3.01" y2="6"/>
+            <line x1="3" y1="12" x2="3.01" y2="12"/>
+            <line x1="3" y1="18" x2="3.01" y2="18"/>
+        `;
+        document.getElementById('viewToggleBtn').title = '切换到卡片视图';
+    }
 }
 
 // ============================================================
@@ -182,6 +217,66 @@ function updateViewInfo(total) {
         const size = getPageSize();
         info.textContent = `${viewName}视图 · 每页${size}篇 · 共${total}篇`;
     }
+}
+
+// ============================================================
+// 头部搜索切换（点击图标展开输入框）
+// ============================================================
+
+let searchExpanded = false;
+
+function toggleSearch() {
+    const box = document.getElementById('searchBox');
+    const input = document.getElementById('searchInput');
+    if (!box || !input) return;
+
+    searchExpanded = !searchExpanded;
+    if (searchExpanded) {
+        box.classList.add('expanded');
+        input.style.display = 'block';
+        input.style.width = '150px';
+        setTimeout(() => input.focus(), 100);
+    } else {
+        box.classList.remove('expanded');
+        input.style.display = 'none';
+        input.style.width = '0';
+        input.value = '';
+    }
+}
+
+// 点击其他地方关闭搜索
+document.addEventListener('click', function(e) {
+    const box = document.getElementById('searchBox');
+    if (!box) return;
+    if (!box.contains(e.target)) {
+        const input = document.getElementById('searchInput');
+        if (input) {
+            searchExpanded = false;
+            box.classList.remove('expanded');
+            input.style.display = 'none';
+            input.style.width = '0';
+            input.value = '';
+        }
+    }
+});
+
+// 头部搜索执行
+function doSearchFromHeader() {
+    const input = document.getElementById('searchInput');
+    if (!input) return;
+    const q = input.value.trim();
+    if (!q) return;
+    // 关闭搜索框
+    searchExpanded = false;
+    document.getElementById('searchBox').classList.remove('expanded');
+    input.style.display = 'none';
+    input.style.width = '0';
+    // 打开搜索弹窗
+    document.getElementById('searchModalInput').value = q;
+    document.getElementById('searchResults').innerHTML = '<p style="text-align:center;padding:20px;color:var(--text-muted)">搜索中...</p>';
+    document.getElementById('searchModal').classList.remove('hidden');
+    setTimeout(() => document.getElementById('searchModalInput').focus(), 100);
+    doSearch();
 }
 
 // ============================================================
@@ -205,12 +300,25 @@ function renderApp() {
                     <a data-page="archive">归档</a>
                 </nav>
                 <div class="header-actions">
-                    <div class="search-box">
-                        <input type="text" id="searchInput" placeholder="搜索..." onkeydown="if(event.key==='Enter')openSearch()">
-                        <button onclick="openSearch()">
+                    <!-- ⭐ 搜索框：只显示图标，点击弹出 -->
+                    <div class="search-box" id="searchBox" onclick="toggleSearch()">
+                        <button type="button" id="searchToggleBtn">
                             <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
                         </button>
+                        <input type="text" id="searchInput" placeholder="搜索..." onkeydown="if(event.key==='Enter'){event.preventDefault();doSearchFromHeader();}">
                     </div>
+
+                    <!-- ⭐ 单个视图切换按钮（卡片/列表循环切换） -->
+                    <button class="view-btn-header" id="viewToggleBtn" onclick="toggleView()" title="切换到列表视图">
+                        <svg viewBox="0 0 24 24" width="18" height="18" id="viewToggleIcon">
+                            <rect x="3" y="3" width="7" height="7"/>
+                            <rect x="14" y="3" width="7" height="7"/>
+                            <rect x="3" y="14" width="7" height="7"/>
+                            <rect x="14" y="14" width="7" height="7"/>
+                        </svg>
+                    </button>
+
+                    <!-- 日夜切换 -->
                     <button class="icon-btn" onclick="toggleTheme()">
                         <svg class="sun-icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
                         <svg class="moon-icon" viewBox="0 0 24 24"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
@@ -235,155 +343,9 @@ function renderApp() {
 
             <!-- ⭐ 首页视图 (homeView) -->
             <div id="homeView">
-                <!-- ⭐⭐⭐ 视图切换控件 ⭐⭐⭐ -->
+                <!-- 视图信息 -->
                 <div class="view-controls" id="viewControls">
                     <div class="left">
-                        <button class="view-btn active" data-view="card" onclick="switchView('card')">
-                            <svg viewBox="0 0 24 24" width="16" height="16"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>
-                            卡片
-                        </button>
-                        <button class="view-btn" data-view="list" onclick="switchView('list')">
-                            <svg viewBox="0 0 24 24" width="16" height="16"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>
-                            列表
-                        </button>
-                        <span class="view-info" id="viewInfo"></span>
-                    </div>
-                    <div class="right">
-                        <span class="view-info" id="pageInfo"></span>
-                    </div>
-                </div>
-
-                <!-- 文章卡片/列表网格 -->
-                <div class="card-grid" id="cardGrid"></div>
-
-                <!-- 分页控件 -->
-                <div class="pagination" id="pagination"></div>
-            </div>
-
-            <!-- 文章详情页 -->
-            <div id="articleView" class="hidden"></div>
-
-            <!-- 友链页 -->
-            <div id="friendsView" class="hidden">
-                <div class="page-content">
-                    <h2>🔗 友情链接</h2>
-                    <div id="friendsList"></div>
-                </div>
-            </div>
-
-            <!-- 关于页 -->
-            <div id="aboutView" class="hidden">
-                <div class="page-content">
-                    <div id="aboutContent"></div>
-                </div>
-            </div>
-
-            <!-- 归档页 -->
-            <div id="archiveView" class="hidden">
-                <div class="page-content">
-                    <h2>📚 文章归档</h2>
-                    <div id="archiveList"></div>
-                </div>
-            </div>
-
-            <div class="ad-slot" id="adBottomBanner"></div>
-        </div>
-
-        <!-- ========== 页脚 ========== -->
-        <footer class="site-footer">
-            <div style="max-width:1240px;margin:0 auto;padding:0 24px;">
-                <div class="footer-grid">
-                    <div class="footer-col"><h4>📖 关于本站</h4><p id="footerAboutText"></p></div>
-                    <div class="footer-col"><h4 id="footerContactTitle">📬 联系方式</h4><div id="footerContact"></div></div>
-                    <div class="footer-col"><h4>🔗 快速链接</h4><div id="footerLinksList"></div></div>
-                </div>
-                <div class="footer-bottom"><p id="footerCopyright"></p><p id="footerICP" style="margin-top:4px;"></p></div>
-            </div>
-            <div id="footerScript"></div>
-        </footer>
-
-        <!-- 返回顶部 -->
-        <button class="back-to-top" id="backToTop" onclick="window.scrollTo({top:0,behavior:'smooth'})">⬆</button>
-
-        <!-- 密码弹窗 -->
-        <div class="modal-overlay hidden" id="pwdModal">
-            <div class="modal-box">
-                <button class="modal-close" onclick="closePwdModal()">✕</button>
-                <h3>🔒 密码验证</h3>
-                <p id="pwdResTitle" style="text-align:center;color:var(--text-muted);margin-bottom:8px;"></p>
-                <input type="password" id="pwdInput" placeholder="输入密码" onkeydown="if(event.key==='Enter')verifyPwd()">
-                <button class="btn" onclick="verifyPwd()" style="background:var(--accent);color:#fff;">验证</button>
-                <p id="pwdError" style="color:var(--danger);text-align:center;margin-top:6px;font-size:.82rem;min-height:20px"></p>
-            </div>
-        </div>
-
-        <!-- 付费弹窗 -->
-        <div class="modal-overlay hidden" id="payModal">
-            <div class="modal-box">
-                <button class="modal-close" onclick="closePayModal()">✕</button>
-                <h3>💰 付费下载</h3>
-                <div id="payForm">
-                    <p style="text-align:center"><strong id="payResTitle"></strong></p>
-                    <p style="text-align:center;color:var(--warm-gold);font-weight:700;">¥<span id="payAmount">0</span></p>
-                    <input type="email" id="payEmail" placeholder="接收链接的邮箱">
-                    <button class="btn" onclick="createOrder()" style="background:var(--warm-gold);color:#fff;">💳 确认支付</button>
-                </div>
-                <div id="payWait" style="display:none;text-align:center;">
-                    <p>📱 请扫码支付</p>
-                    <img id="payQRCode" src="" style="max-width:180px;border-radius:10px;">
-                    <p style="font-size:.76rem;color:var(--text-muted);">支付后链接发送到邮箱</p>
-                    <button class="btn" onclick="checkPayStatus()" style="background:var(--accent);color:#fff;">🔄 查询状态</button>
-                    <p id="payResult" style="margin-top:6px;"></p>
-                </div>
-            </div>
-        </div>
-
-        <!-- 搜索弹窗 -->
-        <div class="modal-overlay hidden" id="searchModal">
-            <div class="modal-box search-modal-box">
-                <button class="modal-close" onclick="closeSearchModal()">✕</button>
-                <h3>🔍 搜索</h3>
-                <div class="search-input-row">
-                    <input type="text" id="searchModalInput" placeholder="关键词..." onkeydown="if(event.key==='Enter')doSearch()">
-                    <button onclick="doSearch()">搜索</button>
-                </div>
-                <div id="searchResults"></div>
-            </div>
-        </div>
-
-        <!-- Toast -->
-        <div class="toast" id="toast"></div>
-    `;
-}
-        </header>
-
-        <!-- 移动端导航 -->
-        <div class="mobile-nav-overlay" id="mobileNavOverlay"></div>
-
-        <!-- 分类栏 -->
-        <div class="cat-section" id="catSection">
-            <div class="cat-bar" id="catBar"></div>
-            <div class="subcat-bar" id="subcatBar"></div>
-        </div>
-
-        <!-- ========== 主内容 ========== -->
-        <div class="container">
-            <div class="ad-slot" id="adTopBanner"></div>
-            <div class="ad-slot" id="adMobile"></div>
-
-            <!-- ⭐ 首页视图 (homeView) -->
-            <div id="homeView">
-                <!-- 视图切换控件 -->
-                <div class="view-controls" id="viewControls">
-                    <div class="left">
-                        <button class="view-btn active" data-view="card" onclick="switchView('card')">
-                            <svg viewBox="0 0 24 24" width="16" height="16"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>
-                            卡片
-                        </button>
-                        <button class="view-btn" data-view="list" onclick="switchView('list')">
-                            <svg viewBox="0 0 24 24" width="16" height="16"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>
-                            列表
-                        </button>
                         <span class="view-info" id="viewInfo"></span>
                     </div>
                     <div class="right">
@@ -934,6 +896,7 @@ function navigate(page) {
         if (cs) cs.classList.remove('hidden');
         renderCats();
         renderCards();
+        updateViewIcon(currentView);  // ⭐ 更新图标
         window.history.pushState({ page: 'home' }, '', '/');
     } else if (page === 'friends') {
         document.getElementById('friendsView').classList.remove('hidden');
@@ -1211,11 +1174,9 @@ async function init() {
     renderFooter();
     renderAds();
 
-    // 4. ⭐ 应用视图按钮状态
+    // 4. ⭐ 应用视图状态
     setTimeout(() => {
-        document.querySelectorAll('.view-btn').forEach(btn => {
-            btn.classList.toggle('active', btn.dataset.view === currentView);
-        });
+        updateViewIcon(currentView);
         if (!handleRoute()) navigate('home');
     }, 100);
 
