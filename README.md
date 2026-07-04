@@ -4,7 +4,7 @@
 一个基于 Cloudflare Workers + D1 + R2 + KV 的轻量级博客与资源管理系统。
 
 
-##  ✨ 功能特性   -详细查看：Readme1.md
+##  ✨ 功能特性   -详细查看：[功能介绍](https://github.com/9llll/MoCi-Flare-Blog/edit/main/Readme1.md)
 
   📝 博客文章管理（Quill 富文本编辑器）
 
