@@ -235,6 +235,144 @@ function renderApp() {
 
             <!-- ⭐ 首页视图 (homeView) -->
             <div id="homeView">
+                <!-- ⭐⭐⭐ 视图切换控件 ⭐⭐⭐ -->
+                <div class="view-controls" id="viewControls">
+                    <div class="left">
+                        <button class="view-btn active" data-view="card" onclick="switchView('card')">
+                            <svg viewBox="0 0 24 24" width="16" height="16"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>
+                            卡片
+                        </button>
+                        <button class="view-btn" data-view="list" onclick="switchView('list')">
+                            <svg viewBox="0 0 24 24" width="16" height="16"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>
+                            列表
+                        </button>
+                        <span class="view-info" id="viewInfo"></span>
+                    </div>
+                    <div class="right">
+                        <span class="view-info" id="pageInfo"></span>
+                    </div>
+                </div>
+
+                <!-- 文章卡片/列表网格 -->
+                <div class="card-grid" id="cardGrid"></div>
+
+                <!-- 分页控件 -->
+                <div class="pagination" id="pagination"></div>
+            </div>
+
+            <!-- 文章详情页 -->
+            <div id="articleView" class="hidden"></div>
+
+            <!-- 友链页 -->
+            <div id="friendsView" class="hidden">
+                <div class="page-content">
+                    <h2>🔗 友情链接</h2>
+                    <div id="friendsList"></div>
+                </div>
+            </div>
+
+            <!-- 关于页 -->
+            <div id="aboutView" class="hidden">
+                <div class="page-content">
+                    <div id="aboutContent"></div>
+                </div>
+            </div>
+
+            <!-- 归档页 -->
+            <div id="archiveView" class="hidden">
+                <div class="page-content">
+                    <h2>📚 文章归档</h2>
+                    <div id="archiveList"></div>
+                </div>
+            </div>
+
+            <div class="ad-slot" id="adBottomBanner"></div>
+        </div>
+
+        <!-- ========== 页脚 ========== -->
+        <footer class="site-footer">
+            <div style="max-width:1240px;margin:0 auto;padding:0 24px;">
+                <div class="footer-grid">
+                    <div class="footer-col"><h4>📖 关于本站</h4><p id="footerAboutText"></p></div>
+                    <div class="footer-col"><h4 id="footerContactTitle">📬 联系方式</h4><div id="footerContact"></div></div>
+                    <div class="footer-col"><h4>🔗 快速链接</h4><div id="footerLinksList"></div></div>
+                </div>
+                <div class="footer-bottom"><p id="footerCopyright"></p><p id="footerICP" style="margin-top:4px;"></p></div>
+            </div>
+            <div id="footerScript"></div>
+        </footer>
+
+        <!-- 返回顶部 -->
+        <button class="back-to-top" id="backToTop" onclick="window.scrollTo({top:0,behavior:'smooth'})">⬆</button>
+
+        <!-- 密码弹窗 -->
+        <div class="modal-overlay hidden" id="pwdModal">
+            <div class="modal-box">
+                <button class="modal-close" onclick="closePwdModal()">✕</button>
+                <h3>🔒 密码验证</h3>
+                <p id="pwdResTitle" style="text-align:center;color:var(--text-muted);margin-bottom:8px;"></p>
+                <input type="password" id="pwdInput" placeholder="输入密码" onkeydown="if(event.key==='Enter')verifyPwd()">
+                <button class="btn" onclick="verifyPwd()" style="background:var(--accent);color:#fff;">验证</button>
+                <p id="pwdError" style="color:var(--danger);text-align:center;margin-top:6px;font-size:.82rem;min-height:20px"></p>
+            </div>
+        </div>
+
+        <!-- 付费弹窗 -->
+        <div class="modal-overlay hidden" id="payModal">
+            <div class="modal-box">
+                <button class="modal-close" onclick="closePayModal()">✕</button>
+                <h3>💰 付费下载</h3>
+                <div id="payForm">
+                    <p style="text-align:center"><strong id="payResTitle"></strong></p>
+                    <p style="text-align:center;color:var(--warm-gold);font-weight:700;">¥<span id="payAmount">0</span></p>
+                    <input type="email" id="payEmail" placeholder="接收链接的邮箱">
+                    <button class="btn" onclick="createOrder()" style="background:var(--warm-gold);color:#fff;">💳 确认支付</button>
+                </div>
+                <div id="payWait" style="display:none;text-align:center;">
+                    <p>📱 请扫码支付</p>
+                    <img id="payQRCode" src="" style="max-width:180px;border-radius:10px;">
+                    <p style="font-size:.76rem;color:var(--text-muted);">支付后链接发送到邮箱</p>
+                    <button class="btn" onclick="checkPayStatus()" style="background:var(--accent);color:#fff;">🔄 查询状态</button>
+                    <p id="payResult" style="margin-top:6px;"></p>
+                </div>
+            </div>
+        </div>
+
+        <!-- 搜索弹窗 -->
+        <div class="modal-overlay hidden" id="searchModal">
+            <div class="modal-box search-modal-box">
+                <button class="modal-close" onclick="closeSearchModal()">✕</button>
+                <h3>🔍 搜索</h3>
+                <div class="search-input-row">
+                    <input type="text" id="searchModalInput" placeholder="关键词..." onkeydown="if(event.key==='Enter')doSearch()">
+                    <button onclick="doSearch()">搜索</button>
+                </div>
+                <div id="searchResults"></div>
+            </div>
+        </div>
+
+        <!-- Toast -->
+        <div class="toast" id="toast"></div>
+    `;
+}
+        </header>
+
+        <!-- 移动端导航 -->
+        <div class="mobile-nav-overlay" id="mobileNavOverlay"></div>
+
+        <!-- 分类栏 -->
+        <div class="cat-section" id="catSection">
+            <div class="cat-bar" id="catBar"></div>
+            <div class="subcat-bar" id="subcatBar"></div>
+        </div>
+
+        <!-- ========== 主内容 ========== -->
+        <div class="container">
+            <div class="ad-slot" id="adTopBanner"></div>
+            <div class="ad-slot" id="adMobile"></div>
+
+            <!-- ⭐ 首页视图 (homeView) -->
+            <div id="homeView">
                 <!-- 视图切换控件 -->
                 <div class="view-controls" id="viewControls">
                     <div class="left">
