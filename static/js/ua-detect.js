@@ -1,5 +1,8 @@
+// ============================================================
 // static/js/ua-detect.js
 // 微信/QQ 浏览器检测，强制跳转浏览器打开
+// ============================================================
+
 (function() {
     var ua = navigator.userAgent.toLowerCase();
     var isWechat = ua.indexOf('micromessenger') > -1;
