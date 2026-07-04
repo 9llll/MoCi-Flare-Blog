@@ -160,32 +160,60 @@ body {
 }
 
 /* ============================================================
-   搜索框
+   头部视图切换按钮
+   ============================================================ */
+
+.view-btn-header {
+    width: 36px;
+    height: 36px;
+    border-radius: 10px;
+    border: 1px solid var(--border);
+    background: var(--surface);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 6px;
+    flex-shrink: 0;
+    transition: var(--transition);
+    color: var(--text-secondary);
+}
+
+.view-btn-header:hover {
+    border-color: var(--accent);
+    color: var(--accent);
+}
+
+.view-btn-header.active {
+    background: var(--accent);
+    color: #fff;
+    border-color: var(--accent);
+}
+
+.view-btn-header svg {
+    width: 18px;
+    height: 18px;
+    stroke: currentColor;
+    fill: none;
+    stroke-width: 2;
+    stroke-linecap: round;
+}
+
+/* ============================================================
+   头部搜索框（只显示图标）
    ============================================================ */
 
 .search-box {
     display: flex;
     align-items: center;
-    background: var(--bg);
+    background: var(--surface);
     border-radius: 10px;
     border: 1px solid var(--border);
     height: 36px;
     transition: var(--transition);
-}
-
-.search-box:focus-within {
-    border-color: var(--accent);
-}
-
-.search-box input {
-    border: none;
-    background: 0 0;
-    padding: 0 14px;
-    outline: none;
-    color: var(--text);
-    width: 120px;
-    font-size: 0.84rem;
-    font-family: var(--font);
+    cursor: pointer;
+    overflow: hidden;
+    position: relative;
 }
 
 .search-box button {
@@ -194,11 +222,46 @@ body {
     cursor: pointer;
     padding: 0 10px;
     color: var(--text-muted);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    flex-shrink: 0;
 }
 
 .search-box button svg {
-    width: 16px;
-    height: 16px;
+    width: 18px;
+    height: 18px;
+    stroke: var(--text-secondary);
+    fill: none;
+    stroke-width: 2;
+    stroke-linecap: round;
+}
+
+.search-box input {
+    border: none;
+    background: 0 0;
+    padding: 0 10px;
+    outline: none;
+    color: var(--text);
+    width: 0;
+    font-size: 0.84rem;
+    font-family: var(--font);
+    display: none;
+    transition: width 0.3s ease;
+    flex: 1;
+    min-width: 0;
+}
+
+.search-box.expanded {
+    border-color: var(--accent);
+    background: var(--bg);
+    min-width: 180px;
+}
+
+.search-box.expanded input {
+    display: block;
+    width: 120px;
 }
 
 /* ============================================================
@@ -442,6 +505,36 @@ body {
 }
 
 /* ============================================================
+   视图控件
+   ============================================================ */
+
+.view-controls {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 16px;
+    flex-wrap: wrap;
+}
+
+.view-controls .left {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.view-controls .right {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.view-info {
+    font-size: 0.78rem;
+    color: var(--text-muted);
+}
+
+/* ============================================================
    卡片网格
    ============================================================ */
 
@@ -551,6 +644,129 @@ body {
     color: var(--text-muted);
     margin-top: auto;
     padding-top: 6px;
+}
+
+/* ============================================================
+   列表视图
+   ============================================================ */
+
+.card-grid.list-view {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.card-grid.list-view .card {
+    display: flex;
+    flex-direction: row;
+    min-height: auto;
+    height: auto;
+    cursor: pointer;
+    transition: var(--transition);
+    border-radius: var(--radius);
+    overflow: hidden;
+}
+
+.card-grid.list-view .card:hover {
+    transform: translateX(4px);
+    box-shadow: var(--shadow-sm);
+}
+
+.card-grid.list-view .card-img {
+    width: 160px;
+    min-width: 160px;
+    max-width: 160px;
+    height: 100px;
+    min-height: 100px;
+    max-height: 100px;
+    flex-shrink: 0;
+}
+
+.card-grid.list-view .card-body {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 10px 14px;
+}
+
+.card-grid.list-view .card-cat {
+    font-size: 0.6rem;
+    padding: 2px 8px;
+    margin-bottom: 4px;
+}
+
+.card-grid.list-view .card-title {
+    font-size: 0.88rem;
+    -webkit-line-clamp: 1;
+}
+
+.card-grid.list-view .card-desc {
+    font-size: 0.78rem;
+    -webkit-line-clamp: 1;
+    max-height: 1.4rem;
+    flex: none;
+}
+
+.card-grid.list-view .card-date {
+    font-size: 0.68rem;
+    padding-top: 4px;
+}
+
+/* ============================================================
+   分页控件
+   ============================================================ */
+
+.pagination {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    margin-top: 24px;
+    padding: 12px 0;
+    flex-wrap: wrap;
+}
+
+.pagination button {
+    padding: 6px 14px;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    background: var(--surface);
+    color: var(--text-secondary);
+    cursor: pointer;
+    font-size: 0.82rem;
+    font-weight: 500;
+    transition: var(--transition);
+    font-family: var(--font);
+    min-width: 36px;
+}
+
+.pagination button:hover:not(:disabled) {
+    border-color: var(--accent);
+    color: var(--accent);
+}
+
+.pagination button.active {
+    background: var(--accent);
+    color: #fff;
+    border-color: var(--accent);
+}
+
+.pagination button:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+}
+
+.pagination .ellipsis {
+    padding: 6px 4px;
+    color: var(--text-muted);
+    font-size: 0.82rem;
+}
+
+.pagination .info {
+    font-size: 0.78rem;
+    color: var(--text-muted);
+    margin: 0 8px;
 }
 
 /* ============================================================
@@ -1219,62 +1435,23 @@ body {
         order: 2;
     }
 
-    .search-box {
-        width: 36px;
-        height: 36px;
-        border-radius: 10px;
-        border: 1px solid var(--border);
-        background: var(--surface);
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        cursor: pointer;
-        flex-shrink: 0;
-        overflow: hidden;
+    /* ⭐ 移动端搜索框适配 */
+    .search-box.expanded {
+        min-width: 140px;
     }
-    .search-box input {
-        display: none;
-        width: 0;
-        padding: 0;
+    .search-box.expanded input {
+        width: 80px;
+        font-size: 0.78rem;
     }
-    .search-box button {
-        padding: 0;
-        width: 36px;
-        height: 36px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        background: transparent;
-        border: none;
-        cursor: pointer;
-        color: var(--text-secondary);
+
+    .view-btn-header {
+        width: 32px;
+        height: 32px;
+        padding: 4px;
     }
-    .search-box button svg {
-        width: 18px;
-        height: 18px;
-        stroke: var(--text-secondary);
-        fill: none;
-        stroke-width: 2;
-        stroke-linecap: round;
-    }
-    .search-box:focus-within {
-        border-color: var(--accent);
-    }
-    .search-box:focus-within input {
-        display: block;
-        width: 120px;
-        padding: 0 10px;
-        background: transparent;
-        border: none;
-        outline: none;
-        color: var(--text);
-        font-size: 0.84rem;
-        font-family: var(--font);
-    }
-    .search-box:focus-within {
-        width: auto;
-        min-width: 160px;
-        background: var(--bg);
+    .view-btn-header svg {
+        width: 16px;
+        height: 16px;
     }
 
     .icon-btn {
@@ -1295,6 +1472,7 @@ body {
         top: 56px;
     }
 
+    /* ⭐ 分类标签缩小 */
     .cat-bar {
         gap: 6px;
         justify-content: center;
@@ -1323,6 +1501,7 @@ body {
         white-space: nowrap;
     }
 
+    /* ⭐ 卡片网格 */
     .card-grid {
         grid-template-columns: repeat(2, 1fr);
         gap: 8px;
@@ -1355,6 +1534,48 @@ body {
         font-size: 0.62rem;
     }
 
+    /* ⭐ 列表视图移动端 */
+    .card-grid.list-view .card {
+        flex-direction: column;
+    }
+    .card-grid.list-view .card-img {
+        width: 100%;
+        min-width: 100%;
+        max-width: 100%;
+        height: 120px;
+        min-height: 120px;
+        max-height: 120px;
+    }
+    .card-grid.list-view .card-body {
+        padding: 10px 12px;
+    }
+
+    /* ⭐ 分页移动端 */
+    .pagination {
+        gap: 4px;
+    }
+    .pagination button {
+        padding: 4px 10px;
+        font-size: 0.75rem;
+        min-width: 30px;
+    }
+    .pagination .info {
+        font-size: 0.7rem;
+        margin: 0 4px;
+    }
+
+    /* ⭐ 视图控件移动端 */
+    .view-controls {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 8px;
+    }
+    .view-controls .left,
+    .view-controls .right {
+        justify-content: center;
+    }
+
+    /* ⭐ 文章详情 */
     .article-layout {
         flex-direction: column;
     }
@@ -1369,6 +1590,7 @@ body {
         gap: 8px;
     }
 
+    /* ⭐ 页脚 */
     .footer-grid {
         grid-template-columns: 1fr;
         gap: 16px;
@@ -1377,6 +1599,7 @@ body {
         grid-template-columns: repeat(2, 1fr);
     }
 
+    /* ⭐ 返回顶部 */
     .back-to-top {
         bottom: 20px;
         right: 20px;
@@ -1384,6 +1607,7 @@ body {
         height: 38px;
     }
 
+    /* ⭐ 容器 */
     .container {
         padding: 12px 12px;
     }
@@ -1391,6 +1615,7 @@ body {
         padding: 10px 12px 0;
     }
 
+    /* ⭐ 弹窗 */
     .modal-box {
         padding: 20px 16px;
         width: 95vw;
@@ -1399,6 +1624,7 @@ body {
         max-height: 70vh;
     }
 
+    /* ⭐ 媒体内容自适应 */
     img,
     video,
     iframe,
@@ -1423,6 +1649,7 @@ body {
         max-height: 100px;
     }
 
+    /* ⭐ 资源按钮 */
     .res-btn {
         padding: 10px 8px;
         font-size: 0.8rem;
@@ -1459,18 +1686,29 @@ body {
     .hamburger-btn span::after {
         width: 14px;
     }
-    .search-box {
-        width: 32px;
-        height: 32px;
+
+    .view-btn-header {
+        width: 28px;
+        height: 28px;
+        padding: 3px;
     }
-    .search-box button {
-        width: 32px;
-        height: 32px;
+    .view-btn-header svg {
+        width: 14px;
+        height: 14px;
     }
+
     .search-box button svg {
         width: 15px;
         height: 15px;
     }
+    .search-box.expanded {
+        min-width: 100px;
+    }
+    .search-box.expanded input {
+        width: 50px;
+        font-size: 0.7rem;
+    }
+
     .icon-btn {
         width: 32px;
         height: 32px;
@@ -1479,6 +1717,7 @@ body {
         width: 15px;
         height: 15px;
     }
+
     .card-grid {
         gap: 6px;
     }
@@ -1490,6 +1729,16 @@ body {
     .card-title {
         font-size: 0.7rem;
     }
+
+    .card-grid.list-view .card-img {
+        height: 90px;
+        min-height: 90px;
+        max-height: 90px;
+    }
+    .card-grid.list-view .card-title {
+        font-size: 0.78rem;
+    }
+
     .cat-tag {
         padding: 4px 8px;
         font-size: 0.6rem;
@@ -1498,253 +1747,4 @@ body {
         padding: 3px 8px;
         font-size: 0.6rem;
     }
-   /* ============================================================
-   视图切换控件
-   ============================================================ */
-
-.view-controls {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 12px;
-    margin-bottom: 16px;
-    flex-wrap: wrap;
-}
-
-.view-controls .left {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-}
-
-.view-controls .right {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-}
-
-.view-btn {
-    padding: 6px 12px;
-    border: 1px solid var(--border);
-    border-radius: 8px;
-    background: var(--surface);
-    color: var(--text-secondary);
-    cursor: pointer;
-    font-size: 0.78rem;
-    font-weight: 500;
-    transition: var(--transition);
-    font-family: var(--font);
-    display: inline-flex;
-    align-items: center;
-    gap: 4px;
-}
-
-.view-btn:hover {
-    border-color: var(--accent);
-    color: var(--accent);
-}
-
-.view-btn.active {
-    background: var(--accent);
-    color: #fff;
-    border-color: var(--accent);
-}
-
-.view-btn svg {
-    width: 16px;
-    height: 16px;
-    stroke: currentColor;
-    fill: none;
-    stroke-width: 2;
-    stroke-linecap: round;
-}
-
-.view-info {
-    font-size: 0.78rem;
-    color: var(--text-muted);
-}
-
-/* ============================================================
-   列表视图
-   ============================================================ */
-
-.card-grid.list-view {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-}
-
-.card-grid.list-view .card {
-    display: flex;
-    flex-direction: row;
-    min-height: auto;
-    height: auto;
-    cursor: pointer;
-    transition: var(--transition);
-    border-radius: var(--radius);
-    overflow: hidden;
-}
-
-.card-grid.list-view .card:hover {
-    transform: translateX(4px);
-    box-shadow: var(--shadow-sm);
-}
-
-.card-grid.list-view .card-img {
-    width: 160px;
-    min-width: 160px;
-    max-width: 160px;
-    height: 100px;
-    min-height: 100px;
-    max-height: 100px;
-    flex-shrink: 0;
-}
-
-.card-grid.list-view .card-body {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    padding: 10px 14px;
-}
-
-.card-grid.list-view .card-cat {
-    font-size: 0.6rem;
-    padding: 2px 8px;
-    margin-bottom: 4px;
-}
-
-.card-grid.list-view .card-title {
-    font-size: 0.88rem;
-    -webkit-line-clamp: 1;
-}
-
-.card-grid.list-view .card-desc {
-    font-size: 0.78rem;
-    -webkit-line-clamp: 1;
-    max-height: 1.4rem;
-    flex: none;
-}
-
-.card-grid.list-view .card-date {
-    font-size: 0.68rem;
-    padding-top: 4px;
-}
-
-/* ============================================================
-   分页控件
-   ============================================================ */
-
-.pagination {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 6px;
-    margin-top: 24px;
-    padding: 12px 0;
-    flex-wrap: wrap;
-}
-
-.pagination button {
-    padding: 6px 14px;
-    border: 1px solid var(--border);
-    border-radius: 8px;
-    background: var(--surface);
-    color: var(--text-secondary);
-    cursor: pointer;
-    font-size: 0.82rem;
-    font-weight: 500;
-    transition: var(--transition);
-    font-family: var(--font);
-    min-width: 36px;
-}
-
-.pagination button:hover:not(:disabled) {
-    border-color: var(--accent);
-    color: var(--accent);
-}
-
-.pagination button.active {
-    background: var(--accent);
-    color: #fff;
-    border-color: var(--accent);
-}
-
-.pagination button:disabled {
-    opacity: 0.4;
-    cursor: not-allowed;
-}
-
-.pagination .ellipsis {
-    padding: 6px 4px;
-    color: var(--text-muted);
-    font-size: 0.82rem;
-}
-
-.pagination .info {
-    font-size: 0.78rem;
-    color: var(--text-muted);
-    margin: 0 8px;
-}
-
-/* ============================================================
-   移动端列表视图适配
-   ============================================================ */
-
-@media (max-width: 768px) {
-    .view-controls {
-        flex-direction: column;
-        align-items: stretch;
-        gap: 8px;
-    }
-
-    .view-controls .left,
-    .view-controls .right {
-        justify-content: center;
-    }
-
-    .card-grid.list-view .card {
-        flex-direction: column;
-    }
-
-    .card-grid.list-view .card-img {
-        width: 100%;
-        min-width: 100%;
-        max-width: 100%;
-        height: 120px;
-        min-height: 120px;
-        max-height: 120px;
-    }
-
-    .card-grid.list-view .card-body {
-        padding: 10px 12px;
-    }
-
-    .pagination {
-        gap: 4px;
-    }
-
-    .pagination button {
-        padding: 4px 10px;
-        font-size: 0.75rem;
-        min-width: 30px;
-    }
-
-    .pagination .info {
-        font-size: 0.7rem;
-        margin: 0 4px;
-    }
-}
-
-@media (max-width: 400px) {
-    .card-grid.list-view .card-img {
-        height: 90px;
-        min-height: 90px;
-        max-height: 90px;
-    }
-
-    .card-grid.list-view .card-title {
-        font-size: 0.78rem;
-    }
-}
 }
