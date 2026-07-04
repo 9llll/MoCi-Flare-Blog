@@ -82,7 +82,10 @@
     </div>
 
     <script>
-        const API = 'https://site-api.moci.cc';
+        // ============================================================
+        // 配置：请修改为你的 Worker API 地址
+        // ============================================================
+        const API = 'https://[你的Worker域名].workers.dev';
 
         // ============================================================
         // 从 URL 参数获取 token 并解密
@@ -96,26 +99,21 @@
                 return;
             }
             
-            // ⭐ 调用 Worker 解密接口
             fetch(`${API}/decrypt-go-url?token=${encodeURIComponent(token)}`)
                 .then(r => r.json())
                 .then(data => {
                     if (data.success && data.url) {
-                        // 解密成功，显示目标域名（保护隐私）
                         try {
                             const urlObj = new URL(data.url);
-                            // 只显示域名，不显示完整路径
                             document.getElementById('targetUrlDisplay').textContent = 
                                 urlObj.hostname + (urlObj.port ? ':' + urlObj.port : '');
                         } catch (e) {
                             document.getElementById('targetUrlDisplay').textContent = '外部资源';
                         }
                         
-                        // 存储真实 URL 供点击使用
                         window.targetUrl = data.url;
                         window.originalUrl = document.referrer || '/';
                         
-                        // 切换到正常页面
                         document.getElementById('loadingState').classList.add('hidden');
                         document.getElementById('normalState').classList.remove('hidden');
                     } else {
@@ -127,75 +125,40 @@
                 });
         })();
 
-        /**
-         * 显示错误状态
-         */
         function showError(msg) {
             document.getElementById('loadingState').classList.add('hidden');
             document.getElementById('errorState').classList.remove('hidden');
             document.getElementById('errorMsg').textContent = msg || '未找到有效的目标链接。';
         }
 
-        /**
-         * 显示加载状态
-         */
-        function showLoading() {
-            document.getElementById('loadingState').classList.remove('hidden');
-            document.getElementById('normalState').classList.add('hidden');
-            document.getElementById('errorState').classList.add('hidden');
-        }
-
-        // ============================================================
-        // 按钮处理函数
-        // ============================================================
-
-        /**
-         * 同意并访问 - 跳转到真实 URL
-         */
         function handleAgree() {
             if (window.targetUrl) {
-                // 用新窗口打开（防止用户无法返回）
                 window.open(window.targetUrl, '_blank');
-                // 或者直接跳转（根据需求选择）
-                // window.location.href = window.targetUrl;
             } else {
                 showError('目标链接不存在，请重试。');
             }
         }
 
-        /**
-         * 不同意 - 返回文章页
-         */
         function handleDisagree() {
             goBack();
         }
 
-        /**
-         * 返回上一页（文章页）
-         */
         function goBack() {
-            // 如果有来源页，返回来源页
             if (document.referrer && document.referrer.includes(window.location.hostname)) {
                 window.location.href = document.referrer;
             } else {
-                // 否则返回首页
                 window.location.href = '/';
             }
         }
 
-        // ============================================================
         // 键盘快捷键
-        // ============================================================
-        
         document.addEventListener('keydown', function(e) {
-            // Enter → 同意
             if (e.key === 'Enter') {
                 e.preventDefault();
                 if (!document.getElementById('normalState').classList.contains('hidden')) {
                     handleAgree();
                 }
             }
-            // ESC → 不同意/返回
             if (e.key === 'Escape') {
                 e.preventDefault();
                 if (!document.getElementById('normalState').classList.contains('hidden')) {
@@ -203,16 +166,6 @@
                 }
             }
         });
-
-        // ============================================================
-        // 防止用户意外离开
-        // ============================================================
-        
-        // 如果用户点击了"同意"，在新窗口打开，不阻止页面关闭
-        // 如果用户点击了"不同意"，返回文章页
-        
-        console.log('🔐 安全跳转页面已加载');
-        console.log('📌 按 Enter 同意，按 ESC 不同意');
     </script>
 </body>
 </html>
