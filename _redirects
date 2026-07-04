@@ -1,2 +1,5 @@
+# Cloudflare Pages 路由配置
+# 所有 /article/* 和 /page/* 请求返回 index.html（SPA 路由）
+
 /article/*  /index.html  200!
 /page/*     /index.html  200!
