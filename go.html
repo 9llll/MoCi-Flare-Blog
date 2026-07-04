@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>安全跳转 · 莫辞の资源库</title>
+    <style>
+        :root {
+            --bg: #f5f4f1;
+            --surface: #fff;
+            --text: #1a1a24;
+            --text-secondary: #4a4a5a;
+            --text-muted: #8a8a9a;
+            --accent: #4f46e5;
+            --accent-hover: #4338ca;
+            --border: #e5e3de;
+            --danger: #ef4444;
+            --success: #10b981;
+            --radius-sm: 8px;
+            --radius-lg: 20px;
+            --shadow-lg: 0 20px 50px rgba(0,0,0,0.10);
+            --font: 'Microsoft YaHei','PingFang SC',system-ui,sans-serif;
+        }
+        *{margin:0;padding:0;box-sizing:border-box}
+        body{font-family:var(--font);background:var(--bg);display:flex;align-items:center;justify-content:center;min-height:100vh;padding:20px;line-height:1.6}
+        .go-container{background:var(--surface);border-radius:var(--radius-lg);padding:40px 32px;max-width:520px;width:100%;box-shadow:var(--shadow-lg);border:1px solid var(--border);text-align:center}
+        .go-icon{font-size:3rem;margin-bottom:16px}
+        .go-title{font-size:1.3rem;font-weight:700;color:var(--text);margin-bottom:8px}
+        .go-subtitle{font-size:0.9rem;color:var(--text-muted);margin-bottom:24px}
+        .disclaimer-box{background:#fff8f0;border-left:4px solid #f59e0b;border-radius:var(--radius-sm);padding:16px 20px;text-align:left;margin-bottom:24px;font-size:0.85rem;color:var(--text-secondary);line-height:1.8}
+        .disclaimer-box strong{color:#b45309}
+        .btn-group{display:flex;gap:12px;justify-content:center;flex-wrap:wrap}
+        .btn{padding:12px 28px;border-radius:30px;font-weight:600;font-size:0.95rem;cursor:pointer;border:none;transition:all 0.2s;font-family:var(--font)}
+        .btn-agree{background:var(--accent);color:#fff;box-shadow:0 4px 12px rgba(79,70,229,0.3)}
+        .btn-agree:hover{background:var(--accent-hover);transform:translateY(-1px)}
+        .btn-disagree{background:transparent;color:var(--text-muted);border:1px solid var(--border)}
+        .btn-disagree:hover{background:var(--bg);color:var(--text)}
+        .spinner{display:inline-block;width:40px;height:40px;border:3px solid var(--border);border-top-color:var(--accent);border-radius:50%;animation:spin 0.8s linear infinite}
+        @keyframes spin{to{transform:rotate(360deg)}}
+        .hidden{display:none !important}
+        .error-state .go-icon{color:var(--danger)}
+        .url-display{background:var(--bg);border-radius:8px;padding:12px 16px;font-size:0.78rem;color:var(--text-muted);word-break:break-all;margin-bottom:16px;border:1px solid var(--border)}
+        @media(max-width:480px){.go-container{padding:28px 18px}.go-icon{font-size:2.5rem}.go-title{font-size:1.15rem}.disclaimer-box{font-size:0.78rem;padding:14px 16px}.btn{padding:10px 20px;font-size:0.88rem;width:100%}}
+    </style>
+</head>
+<body>
+
+    <!-- ===== 加载状态 ===== -->
+    <div class="go-container" id="loadingState">
+        <div class="spinner"></div>
+        <div class="go-title" style="margin-top:16px;">正在验证...</div>
+        <div class="go-subtitle">请稍候，正在解密链接</div>
+    </div>
+
+    <!-- ===== 正常状态 ===== -->
+    <div class="go-container hidden" id="normalState">
+        <div class="go-icon">🚀</div>
+        <div class="go-title">即将访问外部资源</div>
+        <div class="go-subtitle">你正在通过安全跳转访问第三方资源，请务必阅读以下声明</div>
+        <div class="url-display">🔗 <span id="targetUrlDisplay">加载中...</span></div>
+        <div class="disclaimer-box">
+            <strong>📢 重要声明（请仔细阅读）</strong><br>
+            1. 本站仅提供资源链接跳转服务，<strong>不对目标资源的安全性、完整性、可用性作任何保证</strong>。<br>
+            2. 目标资源可能存在缺陷（包括但不限于 BUG、病毒、兼容性问题），使用过程中产生的任何损失由用户自行承担。<br>
+            3. 本站<strong>不提供任何形式的技术支持</strong>，不负责资源的安装、调试、维护及使用教学。<br>
+            4. 所有资源仅供<strong>学习、研究、收藏</strong>之用，请在下载后 <strong>24 小时内删除</strong>，严禁用于商业用途。<br>
+            5. 若您认为该资源侵犯了您的合法权益，请通过本站公布的联系方式告知，我们将及时处理。<br>
+            6. 点击"同意并访问"即表示您已充分理解并接受上述全部条款，自愿承担一切访问及使用风险。
+        </div>
+        <div class="btn-group">
+            <button class="btn btn-disagree" onclick="handleDisagree()">❌ 不同意</button>
+            <button class="btn btn-agree" onclick="handleAgree()">✅ 同意并访问</button>
+        </div>
+    </div>
+
+    <!-- ===== 错误状态 ===== -->
+    <div class="go-container error-state hidden" id="errorState">
+        <div class="go-icon">⚠️</div>
+        <div class="go-title">链接验证失败</div>
+        <div class="go-subtitle" id="errorMsg">安全令牌无效、已过期或被篡改，无法继续访问。</div>
+        <button class="btn btn-disagree" onclick="goBack()">返回文章页</button>
+    </div>
+
+    <script>
+        const API = 'https://site-api.moci.cc';
+
+        // ============================================================
+        // 从 URL 参数获取 token 并解密
+        // ============================================================
+        (function() {
+            const params = new URLSearchParams(window.location.search);
+            const token = params.get('token');
+            
+            if (!token) {
+                showError('缺少安全验证令牌。');
+                return;
+            }
+            
+            // ⭐ 调用 Worker 解密接口
+            fetch(`${API}/decrypt-go-url?token=${encodeURIComponent(token)}`)
+                .then(r => r.json())
+                .then(data => {
+                    if (data.success && data.url) {
+                        // 解密成功，显示目标域名（保护隐私）
+                        try {
+                            const urlObj = new URL(data.url);
+                            // 只显示域名，不显示完整路径
+                            document.getElementById('targetUrlDisplay').textContent = 
+                                urlObj.hostname + (urlObj.port ? ':' + urlObj.port : '');
+                        } catch (e) {
+                            document.getElementById('targetUrlDisplay').textContent = '外部资源';
+                        }
+                        
+                        // 存储真实 URL 供点击使用
+                        window.targetUrl = data.url;
+                        window.originalUrl = document.referrer || '/';
+                        
+                        // 切换到正常页面
+                        document.getElementById('loadingState').classList.add('hidden');
+                        document.getElementById('normalState').classList.remove('hidden');
+                    } else {
+                        showError(data.error || '解密失败，请重试。');
+                    }
+                })
+                .catch(() => {
+                    showError('网络错误，请检查连接后重试。');
+                });
+        })();
+
+        /**
+         * 显示错误状态
+         */
+        function showError(msg) {
+            document.getElementById('loadingState').classList.add('hidden');
+            document.getElementById('errorState').classList.remove('hidden');
+            document.getElementById('errorMsg').textContent = msg || '未找到有效的目标链接。';
+        }
+
+        /**
+         * 显示加载状态
+         */
+        function showLoading() {
+            document.getElementById('loadingState').classList.remove('hidden');
+            document.getElementById('normalState').classList.add('hidden');
+            document.getElementById('errorState').classList.add('hidden');
+        }
+
+        // ============================================================
+        // 按钮处理函数
+        // ============================================================
+
+        /**
+         * 同意并访问 - 跳转到真实 URL
+         */
+        function handleAgree() {
+            if (window.targetUrl) {
+                // 用新窗口打开（防止用户无法返回）
+                window.open(window.targetUrl, '_blank');
+                // 或者直接跳转（根据需求选择）
+                // window.location.href = window.targetUrl;
+            } else {
+                showError('目标链接不存在，请重试。');
+            }
+        }
+
+        /**
+         * 不同意 - 返回文章页
+         */
+        function handleDisagree() {
+            goBack();
+        }
+
+        /**
+         * 返回上一页（文章页）
+         */
+        function goBack() {
+            // 如果有来源页，返回来源页
+            if (document.referrer && document.referrer.includes(window.location.hostname)) {
+                window.location.href = document.referrer;
+            } else {
+                // 否则返回首页
+                window.location.href = '/';
+            }
+        }
+
+        // ============================================================
+        // 键盘快捷键
+        // ============================================================
+        
+        document.addEventListener('keydown', function(e) {
+            // Enter → 同意
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                if (!document.getElementById('normalState').classList.contains('hidden')) {
+                    handleAgree();
+                }
+            }
+            // ESC → 不同意/返回
+            if (e.key === 'Escape') {
+                e.preventDefault();
+                if (!document.getElementById('normalState').classList.contains('hidden')) {
+                    handleDisagree();
+                }
+            }
+        });
+
+        // ============================================================
+        // 防止用户意外离开
+        // ============================================================
+        
+        // 如果用户点击了"同意"，在新窗口打开，不阻止页面关闭
+        // 如果用户点击了"不同意"，返回文章页
+        
+        console.log('🔐 安全跳转页面已加载');
+        console.log('📌 按 Enter 同意，按 ESC 不同意');
+    </script>
+</body>
+</html>

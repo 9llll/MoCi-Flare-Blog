@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>管理后台 · 莫辞の资源库</title>
+    
+    <!-- 外部 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/quill@2.0.3/dist/quill.snow.css" rel="stylesheet">
+    <link rel="stylesheet" href="/static/css/admin.css">
+    
+    <!-- 外部 JS（提前加载） -->
+    <script src="https://cdn.jsdelivr.net/npm/quill@2.0.3/dist/quill.js"></script>
+</head>
+<body>
+
+<!-- ========== 登录遮罩 ========== -->
+<div id="loginOverlay">
+    <div class="login-card">
+        <div class="logo-icon">🌿</div>
+        <h2>莫辞の资源库</h2>
+        <p>管理后台</p>
+        <input type="password" id="loginPwd" placeholder="请输入管理密码" onkeydown="if(event.key==='Enter')login()">
+        <button class="btn" onclick="login()">🔓 登录</button>
+        <div class="login-error" id="loginError"></div>
+    </div>
+</div>
+
+<!-- ========== 汉堡菜单按钮 ========== -->
+<button class="hamburger-btn" id="hamburgerBtn" onclick="toggleSidebar()" style="display:none"><span></span></button>
+
+<!-- ========== 侧边栏 ========== -->
+<aside class="sidebar" id="sidebar" style="display:none;">
+    <div class="logo"><div class="icon">🌿</div>莫辞の资源库</div>
+    <div class="nav-section">内容管理</div>
+    <div class="nav-item active" data-panel="articles">📝 文章管理</div>
+    <div class="nav-item" data-panel="categories">🏷️ 分类管理</div>
+    <div class="nav-item" data-panel="friends">🔗 友链管理</div>
+    <div class="nav-item" data-panel="pages">📑 单页管理</div>
+    <div class="nav-item" data-panel="orders">💳 付费订单</div>
+    <div class="nav-section">站点设置</div>
+    <div class="nav-item" data-panel="settings">⚙️ 基本设置</div>
+    <div class="nav-item" data-panel="seo">🔍 SEO 配置</div>
+    <div class="nav-item" data-panel="footer">📋 底部信息</div>
+    <div class="nav-item" data-panel="ads">📢 广告管理</div>
+    <div class="nav-item" data-panel="smtp">📧 邮件配置</div>
+    <div class="nav-item" data-panel="about">📄 关于页面</div>
+    <div class="nav-spacer"></div>
+    <div class="sidebar-actions">
+        <button class="btn btn-save" onclick="saveAll()">💾 保存全部设置</button>
+        <button class="btn btn-outline" onclick="window.open('/','_blank')">🏠 查看前台</button>
+        <button class="btn btn-logout" onclick="logout()">🚪 退出登录</button>
+    </div>
+</aside>
+
+<!-- ========== 主内容 ========== -->
+<div class="main" id="mainContent" style="display:none;">
+    <div class="panel" id="panel-articles"><h2>📝 文章管理</h2><button class="btn" onclick="openArticleEdit()">＋ 新建文章</button><div id="articleList" style="margin-top:14px"></div></div>
+    <div class="panel hidden" id="panel-categories"><h2>🏷️ 分类管理</h2><div class="info-box"><strong>格式：</strong>父分类名称 | 父分类英文slug : 子分类1 | 子分类1英文slug, 子分类2 | 子分类2英文slug</div><div style="display:flex;gap:8px;margin-bottom:12px;flex-wrap:wrap"><input type="text" id="catName" placeholder="父分类名称" style="flex:1;min-width:100px"><input type="text" id="catSlug" placeholder="父分类英文slug" style="flex:1;min-width:100px"><input type="text" id="catChildren" placeholder="子分类: 名称|slug, 名称|slug" style="flex:2;min-width:180px"><button class="btn" onclick="addCategory()">＋ 添加</button></div><div id="categoryList"></div></div>
+    <div class="panel hidden" id="panel-friends"><h2>🔗 友链管理</h2><div style="display:flex;gap:8px;margin-bottom:12px;flex-wrap:wrap"><input type="text" id="friendName" placeholder="名称" style="flex:1;min-width:80px"><input type="text" id="friendUrl" placeholder="URL" style="flex:1;min-width:100px"><input type="text" id="friendDesc" placeholder="描述" style="flex:1;min-width:80px"><button class="btn" onclick="addFriend()">＋ 添加</button></div><div id="friendList"></div></div>
+    <div class="panel hidden" id="panel-pages"><h2>📑 自定义单页</h2><div class="info-box">独立页面，可显示在导航栏。访问地址：/page/slug.html</div><button class="btn" onclick="openPageEdit()">＋ 新建单页</button><div id="pagesList" style="margin-top:14px"></div></div>
+    <div class="panel hidden" id="panel-orders"><h2>💳 付费订单</h2><div style="display:flex;gap:8px;margin-bottom:12px"><button class="btn small" onclick="loadOrders()">🔄 刷新</button><select id="orderFilter" onchange="loadOrders()" style="width:auto;margin:0"><option value="all">全部</option><option value="pending">待确认</option><option value="completed">已完成</option></select></div><div id="orderList"></div></div>
+    <div class="panel hidden" id="panel-settings"><h2>⚙️ 基本设置</h2><div class="modal-grid"><div><label>站点标题</label><input type="text" id="siteTitle"></div><div><label>副标题</label><input type="text" id="siteSubtitle"></div><div class="modal-full"><label>描述</label><textarea id="siteDesc"></textarea></div><div><label>关键词</label><input type="text" id="siteKeywords"></div><div><label>Logo URL</label><input type="text" id="siteLogo"></div><div><label>Favicon URL</label><input type="text" id="siteFavicon"></div><div><label>版权</label><input type="text" id="siteCopyright" placeholder="© 2024"></div><div><label>ICP</label><input type="text" id="siteICP"></div><div><label>随机图 API</label><input type="text" id="randomImageApi" placeholder="https://picsum.photos/400/200?random="></div></div></div>
+    <div class="panel hidden" id="panel-seo"><h2>🔍 SEO</h2><div class="modal-grid"><div class="modal-full"><label>Meta Description</label><textarea id="seoDesc"></textarea></div><div class="modal-full"><label>Meta Keywords</label><input type="text" id="seoKeywords"></div><div><label>Google</label><input type="text" id="seoGoogle"></div><div><label>Bing</label><input type="text" id="seoBing"></div><div><label>百度</label><input type="text" id="seoBaidu"></div><div><label>Sitemap</label><select id="seoSitemap"><option value="1">启用</option><option value="0">禁用</option></select></div><div><label>RSS</label><select id="seoRSS"><option value="1">启用</option><option value="0">禁用</option></select></div><div><label>RSS数量</label><input type="number" id="seoRSSCount" value="20"></div><div><label>Sitemap URL</label><input type="text" id="seoSitemapUrl"></div><div class="modal-full"><label>Robots.txt</label><textarea id="seoRobots"></textarea></div></div></div>
+    <div class="panel hidden" id="panel-footer"><h2>📋 底部信息</h2><div class="modal-grid"><div class="modal-full"><label>关于文字</label><textarea id="footerAbout"></textarea></div><div class="modal-full" style="font-size:.85rem;font-weight:700;color:var(--text);margin-top:8px">📬 联系方式（自定义，留空不显示）</div><div><label>栏目标题</label><input type="text" id="footerContactTitle" placeholder="联系方式"></div><div></div><div><label>第1行 - 标签</label><input type="text" id="footerContact1Label" placeholder="📧 邮箱"></div><div><label>第1行 - 内容</label><input type="text" id="footerContact1Value"></div><div><label>第1行 - 链接（可选）</label><input type="text" id="footerContact1Url"></div><div></div><div><label>第2行 - 标签</label><input type="text" id="footerContact2Label" placeholder="💬 微信"></div><div><label>第2行 - 内容</label><input type="text" id="footerContact2Value"></div><div><label>第2行 - 链接（可选）</label><input type="text" id="footerContact2Url"></div><div></div><div><label>第3行 - 标签</label><input type="text" id="footerContact3Label"></div><div><label>第3行 - 内容</label><input type="text" id="footerContact3Value"></div><div><label>第3行 - 链接（可选）</label><input type="text" id="footerContact3Url"></div><div></div><div><label>第4行 - 标签</label><input type="text" id="footerContact4Label"></div><div><label>第4行 - 内容</label><input type="text" id="footerContact4Value"></div><div><label>第4行 - 链接（可选）</label><input type="text" id="footerContact4Url"></div><div class="modal-full"><label>自定义链接 JSON</label><textarea id="footerLinks" placeholder='[{"name":"关于","url":"/about"}]'></textarea></div><div class="modal-full"><label>统计代码</label><textarea id="footerScript"></textarea></div></div></div>
+    <div class="panel hidden" id="panel-ads"><h2>📢 广告</h2><div class="modal-grid"><div class="modal-full"><label>顶部</label><textarea id="adTopBanner"></textarea></div><div><label>侧边栏</label><textarea id="adSidebar"></textarea></div><div><label>文章内</label><textarea id="adInArticle"></textarea></div><div><label>底部</label><textarea id="adBottomBanner"></textarea></div><div><label>列表间</label><textarea id="adListBetween"></textarea></div><div class="modal-full"><label>移动端</label><textarea id="adMobile"></textarea></div></div></div>
+    <div class="panel hidden" id="panel-smtp"><h2>📧 SMTP</h2><div class="modal-grid"><div><label>服务器</label><input type="text" id="smtpHost"></div><div><label>端口</label><input type="number" id="smtpPort" value="587"></div><div><label>邮箱</label><input type="email" id="smtpUser"></div><div><label>密码</label><input type="password" id="smtpPass"></div><div><label>发件名</label><input type="text" id="smtpFromName" value="莫辞の资源库"></div><div><label>加密</label><select id="smtpSecure"><option value="tls">TLS</option><option value="ssl">SSL</option></select></div></div><div style="margin-top:10px;display:flex;gap:8px;align-items:center"><button class="btn" onclick="testSMTP()">📤 测试</button><span id="smtpTestResult" style="font-size:.82rem"></span></div></div>
+    <div class="panel hidden" id="panel-about"><h2>📄 关于页面</h2><div id="aboutEditor" style="min-height:260px;background:var(--bg);border-radius:var(--radius-sm)"></div></div>
+</div>
+
+<!-- ========== 弹窗 ========== -->
+<div class="modal-overlay hidden" id="articleModal"><div class="modal"><h2 id="modalTitle">编辑文章</h2><input type="hidden" id="articleId" value="-1"><div class="modal-grid"><div><label>标题 <span class="required">*</span></label><input type="text" id="artTitle"></div><div><label>摘要</label><input type="text" id="artSummary"></div><div><label>封面</label><input type="text" id="artCover"></div><div><label>分类</label><select id="artCategory"><option value="">未分类</option></select></div><div><label>子分类</label><select id="artSubcategory"><option value="">无</option></select></div></div><hr><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px"><h3 style="margin:0">📦 资源</h3><button class="btn small outline" onclick="addResourceLink()">＋ 添加</button></div><div id="resourceLinksList"></div><hr><label>正文</label><div id="quillEditor"></div><div style="margin-top:12px;display:flex;gap:8px"><button class="btn" onclick="saveArticle()">💾 保存</button><button class="btn outline" onclick="$('articleModal').classList.add('hidden')">取消</button></div></div></div>
+
+<div class="modal-overlay hidden" id="pageModal"><div class="modal"><h2 id="pageModalTitle">编辑单页</h2><input type="hidden" id="pageId" value="-1"><div class="modal-grid"><div><label>标题 <span class="required">*</span></label><input type="text" id="pageTitle"></div><div><label>URL标识 <span class="required">*</span></label><input type="text" id="pageSlug" placeholder="英文+连字符"></div><div><label>导航显示</label><select id="pageShowInNav"><option value="1">✅ 显示</option><option value="0">❌ 隐藏</option></select></div><div><label>导航标签</label><input type="text" id="pageNavLabel"></div></div><label>内容</label><div id="pageQuillEditor" style="min-height:240px;background:var(--bg);border-radius:var(--radius-sm)"></div><div style="margin-top:12px;display:flex;gap:8px"><button class="btn" onclick="savePage()">💾 保存</button><button class="btn outline" onclick="$('pageModal').classList.add('hidden')">取消</button></div></div></div>
+
+<!-- ========== Toast ========== -->
+<div class="toast" id="toast"></div>
+
+<!-- ========== 外部 JS ========== -->
+<script src="/static/js/admin.js"></script>
+
+</body>
+</html>

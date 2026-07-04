@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>在浏览器中打开</title>
+    <style>
+        :root {
+            --bg: #f5f4f1;
+            --surface: #fff;
+            --text: #1a1a24;
+            --text-secondary: #4a4a5a;
+            --accent: #4f46e5;
+            --border: #e5e3de;
+            --radius: 16px;
+            --font: 'Microsoft YaHei', 'PingFang SC', system-ui, sans-serif;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: var(--font);
+            background: var(--bg);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            padding: 24px;
+            text-align: center;
+            line-height: 1.6;
+        }
+        .card {
+            background: var(--surface);
+            border-radius: var(--radius);
+            padding: 40px 28px;
+            max-width: 360px;
+            width: 100%;
+            box-shadow: 0 8px 30px rgba(0,0,0,0.06);
+            border: 1px solid var(--border);
+        }
+        .icon {
+            font-size: 3.5rem;
+            margin-bottom: 16px;
+        }
+        h2 {
+            font-size: 1.3rem;
+            color: var(--text);
+            margin-bottom: 8px;
+        }
+        p {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            margin-bottom: 20px;
+        }
+        .steps {
+            background: #f0eeff;
+            border-radius: 12px;
+            padding: 16px;
+            text-align: left;
+            margin-bottom: 20px;
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            line-height: 2;
+        }
+        .btn {
+            display: block;
+            width: 100%;
+            padding: 12px;
+            background: var(--accent);
+            color: #fff;
+            border: none;
+            border-radius: 10px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            margin-bottom: 10px;
+            font-family: var(--font);
+        }
+        .btn-outline {
+            background: transparent;
+            color: var(--accent);
+            border: 1px solid var(--accent);
+        }
+        .hidden {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="card" id="wechatGuide">
+        <div class="icon">🌐</div>
+        <h2>请在浏览器中打开</h2>
+        <p>你正在使用微信/QQ 内置浏览器，部分功能可能受限。</p>
+        <div class="steps">
+            <strong>👉 操作方法：</strong><br>
+            1. 点击右上角 <strong>⋮</strong> 或 <strong>···</strong> 菜单<br>
+            2. 选择 <strong>在浏览器中打开</strong><br>
+            3. 在弹出的浏览器中继续访问
+        </div>
+        <button class="btn" onclick="copyLink()">📋 复制链接</button>
+        <p id="copyMsg" style="color:var(--accent);font-size:0.8rem;display:none;">链接已复制，请粘贴到浏览器打开</p>
+    </div>
+
+    <script>
+        (function() {
+            const ua = navigator.userAgent.toLowerCase();
+            const isWechat = ua.includes('micromessenger');
+            const isQQ = ua.includes('qq/') && !ua.includes('mqqbrowser');
+            const targetUrl = new URLSearchParams(window.location.search).get('url') || '/';
+
+            // 如果不是微信/QQ内置浏览器，直接跳转目标
+            if (!isWechat && !isQQ) {
+                window.location.href = targetUrl;
+                return;
+            }
+
+            // 显示引导卡片
+            document.getElementById('wechatGuide').classList.remove('hidden');
+
+            // 复制链接功能
+            window.copyLink = function() {
+                const url = targetUrl.startsWith('http') ? targetUrl : window.location.origin + targetUrl;
+                if (navigator.clipboard) {
+                    navigator.clipboard.writeText(url).then(() => {
+                        document.getElementById('copyMsg').style.display = 'block';
+                    });
+                } else {
+                    // 降级方案：创建临时输入框
+                    const input = document.createElement('input');
+                    input.value = url;
+                    document.body.appendChild(input);
+                    input.select();
+                    document.execCommand('copy');
+                    document.body.removeChild(input);
+                    document.getElementById('copyMsg').style.display = 'block';
+                }
+            };
+        })();
+    </script>
+</body>
+</html>
